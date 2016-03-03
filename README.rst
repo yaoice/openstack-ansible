@@ -10,7 +10,7 @@ OpenStack-Ansible's mission statement is:
     operating OpenStack clouds.
 
 OpenStack-Ansible provides `Centos7.2 <http://mirror.centos.org/>`__ os and
-`SaltStack <http://www.saltstack.com/>`__ sls to meet OpenStack-Ansible's mission.
+`Ansible <http://www.ansible.com/>`__ sls to meet OpenStack-Ansible's mission.
 OpenStack-Ansible is highly opinionated out of the box, but allows for complete
 customization. This permits operators with little experience to deploy
 OpenStack quickly and as experience grows modify the OpenStack
