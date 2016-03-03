@@ -1,0 +1,20 @@
+
+- name: Ensure Rabbitmq vhost
+  rabbitmq_vhost:
+    name: "{{ nova_rabbitmq_vhost }}"
+    state: "present"
+  delegate_to: "{{ groups['rabbitmq_all'][0] }}"
+  tags:
+    - nova-rabbitmq
+    - nova-rabbitmq-vhost
+
+- name: Ensure rabbitmq user
+  rabbitmq_user:
+    user: "{{ nova_rabbitmq_userid }}"
+    password: "{{ nova_rabbitmq_password }}"
+    vhost: "{{ nova_rabbitmq_vhost }}"
+    configure_priv: ".*"
+    read_priv: ".*"
+    write_priv: ".*"
+    state: "present"
+  delegate_to: "{{ groups['rabbitmq_all'][0] }}"

@@ -1,0 +1,90 @@
+- name: Create DB for service
+  mysql_db:
+    login_user: "{{ mariadb_root_user }}"
+    login_password: "{{ mariadb_root_password }}"
+    login_host: "{{ neutron_galera_address }}"
+    name: "{{ neutron_galera_database }}"
+    state: "present"
+  tags:
+    - neutron-db-setup
+
+- name: Grant access to the DB for the service
+  mysql_user:
+    login_user: "{{ mariadb_root_user }}"
+    login_password: "{{ mariadb_root_password }}"
+    login_host: "{{ neutron_galera_address }}"
+    name: "{{ neutron_galera_user }}"
+    password: "{{ neutron_galera_password }}"
+    host: "{{ item }}"
+    state: "present"
+    priv: "{{ neutron_galera_database }}.*:ALL"
+  with_items:
+    - "localhost"
+    - "%"
+  tags:
+    - neutron-db-setup
+
+- name: Get neutron migrations facts
+  neutron_migrations_facts:
+    release: liberty
+    library_path: "{{ neutron_lib_dir }}"
+    bin_path: "{{ neutron_bin }}"
+  tags:
+    - neutron-db-setup
+    - neutron-upgrade
+
+- name: Print neutron migrations facts
+  debug: var=neutron_migrations
+  tags:
+    - neutron-db-setup
+    - neutron-upgrade
+
+- name: Perform a Neutron DB online upgrade (expand)
+  command: |
+    {{ neutron_bin }}/neutron-db-manage
+                      --config-file {{ neutron_db_config }}
+                      --config-file {{ neutron_db_plugin }}
+                      upgrade --expand
+  sudo: yes
+  sudo_user: "{{ neutron_system_user_name }}"
+  when: not neutron_migrations['expand']['head']|bool
+  tags:
+    - neutron-db-setup
+    - neutron-upgrade
+
+- name: Stop Neutron server
+  service:
+    name: "neutron-server"
+    state: stopped
+    pattern: "neutron-server"
+  delegate_to: "{{ item }}"
+  with_items: groups['neutron_server']
+  when: not neutron_migrations['contract']['head']|bool
+  tags:
+    - neutron-db-setup
+    - neutron-upgrade
+
+- name: Perform a Neutron DB offline upgrade (contract)
+  command: |
+    {{ neutron_bin }}/neutron-db-manage
+                      --config-file {{ neutron_db_config }}
+                      --config-file {{ neutron_db_plugin }}
+                      upgrade --contract
+  sudo: yes
+  sudo_user: "{{ neutron_system_user_name }}"
+  when: not neutron_migrations['contract']['head']|bool
+  tags:
+    - neutron-db-setup
+    - neutron-upgrade
+
+- name: Start neutron server
+  service:
+    name: "neutron-server"
+    state: started
+    pattern: "neutron-server"
+  delegate_to: "{{ item }}"
+  with_items: groups['neutron_server']
+  when: not neutron_migrations['contract']['head']|bool
+  tags:
+    - neutron-db-setup
+    - neutron-upgrade

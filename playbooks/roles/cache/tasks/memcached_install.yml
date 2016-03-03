@@ -1,0 +1,9 @@
+- name: Install memcached 
+  yum: name=memcached  state=present
+
+#- name: Configure memcached file
+#  template: src=rabbitmq-env.conf.j2 dest=/etc/rabbitmq/rabbitmq-env.conf
+#  notify: restart memcached 
+
+- name: Start memcached service
+  service: name=memcached state=started enabled=true

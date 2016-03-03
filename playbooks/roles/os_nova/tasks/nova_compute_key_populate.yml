@@ -1,0 +1,17 @@
+- name: Create the nova SSH config file
+  copy:
+    src: "ssh_config"
+    dest: "/var/lib/nova/.ssh/config"
+    owner: "{{ nova_system_user_name }}"
+    group: "{{ nova_system_user_name }}"
+    mode: "0644"
+
+- name: Get public key contents and store as var
+  command: |
+    cat {{ nova_system_home_folder }}/.ssh/id_rsa.pub
+  register: nova_pub
+  changed_when: false
+
+- name: Register a fact for the nova pub key
+  set_fact:
+     nova_pubkey: "{{ nova_pub.stdout }}"

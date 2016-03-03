@@ -1,0 +1,24 @@
+- name: Create DB for service
+  mysql_db:
+    login_user: "{{ mariadb_root_user }}"
+    login_password: "{{ mariadb_root_password }}"
+    login_host: "{{ nova_galera_address }}"
+    name: "{{ nova_galera_database }}"
+    state: "present"
+
+- name: Grant access to the DB for the service
+  mysql_user:
+    login_user: "{{ mariadb_root_user }}"
+    login_password: "{{ mariadb_root_password }}"
+    login_host: "{{ nova_galera_address }}"
+    name: "{{ nova_galera_user }}"
+    password: "{{ nova_galera_password }}"
+    host: "{{ item }}"
+    state: "present"
+    priv: "{{ nova_galera_database }}.*:ALL"
+  with_items:
+    - "localhost"
+    - "%"
+
+- name: Perform a Nova DB sync
+  command: nova-manage db sync

@@ -1,0 +1,24 @@
+- name: Create DB for service
+  mysql_db:
+    login_user: "{{ mariadb_root_user }}"
+    login_password: "{{ mariadb_root_password }}"
+    login_host: "{{ glance_mariadb_address }}"
+    name: "{{ glance_mariadb_database }}"
+    state: "present"
+
+- name: Grant access to the DB for the service
+  mysql_user:
+    login_user: "{{ mariadb_root_user }}"
+    login_password: "{{ mariadb_root_password }}"
+    login_host: "{{ glance_mariadb_address }}"
+    name: "{{ glance_mariadb_user }}"
+    password: "{{ glance_mariadb_password }}"
+    host: "{{ item }}"
+    state: "present"
+    priv: "{{ glance_mariadb_database }}.*:ALL"
+  with_items:
+    - "localhost"
+    - "%"
+
+- name: Perform a Glance DB sync
+  command: glance-manage db_sync

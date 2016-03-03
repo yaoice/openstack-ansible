@@ -1,0 +1,125 @@
+---
+# Copyright 2015, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+## OpenStack Source Code Release
+openstack_release: master
+
+# Global minimum kernel requirement
+openstack_host_required_kernel: 3.13.0-34-generic
+
+verbose: True
+debug: False
+ansible_ssh_host: 127.0.0.1
+external_lb_vip_address: 127.0.0.1
+internal_lb_vip_address: 127.0.0.1
+nova_management_address: 127.0.0.1
+memcached_servers: 127.0.0.1
+memcached_encryption_key: secrete
+glance_host: 127.0.0.1
+
+horizon_secret_key: 123456
+
+neutron_ha_vrrp_auth_password: 123
+neutron_rabbitmq_password: neutron
+
+mariadb_root_user: root
+mariadb_root_password: ''
+
+## Region Name
+service_region: RegionOne
+
+## DHCP Domain Name
+dhcp_domain: openstacklocal
+
+## RabbitMQ
+rabbitmq_cluster_name: openstack
+rabbitmq_port: "{{ (rabbitmq_use_ssl | bool) | ternary(5671, 5672) }}"
+rabbitmq_servers: "{% for host in groups['rabbitmq_all'] %}{{ hostvars[host]['ansible_ssh_host'] }}:{{ rabbitmq_port }}{% if not loop.last %},{% endif %}{% endfor %}"
+rabbitmq_use_ssl: False 
+
+## Nova
+nova_service_port: 8774
+nova_service_proto: http
+nova_service_adminuri_proto: "{{ openstack_service_adminuri_proto | default(nova_service_proto) }}"
+nova_service_user_name: nova
+nova_service_password: nova
+nova_service_project_name: service
+nova_service_project_domain_id: default
+nova_service_user_domain_id: default
+nova_service_adminuri: "{{ nova_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ nova_service_port }}"
+nova_service_adminurl: "{{ nova_service_adminuri }}/v2/%(tenant_id)s"
+nova_service_region: "{{ service_region }}"
+nova_metadata_port: 8775
+nova_keystone_auth_plugin: password
+nova_ceph_client: '{{ cinder_ceph_client }}'
+nova_ceph_client_uuid: '{{ cinder_ceph_client_uuid | default() }}'
+nova_dhcp_domain: "{{ dhcp_domain }}"
+nova_metadata_proxy_secret: 123456
+
+
+## Neutron
+neutron_service_port: 9696
+neutron_service_proto: http
+neutron_service_adminuri_proto: "{{ openstack_service_adminuri_proto | default(neutron_service_proto) }}"
+neutron_service_user_name: neutron
+neutron_service_password: neutron
+neutron_service_project_name: service
+neutron_service_project_domain_id: default
+neutron_service_user_domain_id: default
+neutron_service_adminuri: "{{ neutron_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ neutron_service_port }}"
+neutron_service_adminurl: "{{ neutron_service_adminuri }}"
+neutron_service_region: "{{ service_region }}"
+neutron_dhcp_domain: "{{ dhcp_domain }}"
+
+## Glance
+glance_service_port: 9292
+glance_service_proto: http
+glance_service_adminuri_proto: "{{ openstack_service_adminuri_proto | default(glance_service_proto) }}"
+glance_service_user_name: glance
+glance_service_project_name: service
+glance_service_project_domain_id: default
+glance_service_user_domain_id: default
+glance_service_adminurl: "{{ glance_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ glance_service_port }}"
+glance_service_region: "{{ service_region }}"
+# Only specify this if you want to list the servers - by default LB host/port will be used
+#glance_api_servers: "{% for host in groups['glance_all'] %}{{ hostvars[host]['container_address'] }}:{{ glance_service_port }}{% if not loop.last %},{% endif %}{% endfor %}"
+
+## Keystone
+keystone_auth_admin_token: admin_token
+keystone_admin_user_name: admin
+keystone_admin_tenant_name: admin
+keystone_admin_port: 35357
+keystone_service_port: 5000
+keystone_service_proto: http
+keystone_service_adminuri_proto: "{{ openstack_service_adminuri_proto | default(keystone_service_proto) }}"
+keystone_service_internaluri_proto: "{{ openstack_service_internaluri_proto | default(keystone_service_proto) }}"
+keystone_service_publicuri_proto: "{{ openstack_service_publicuri_proto | default(keystone_service_proto) }}"
+keystone_service_user_name: keystone
+keystone_service_tenant_name: service
+keystone_service_region: "{{ service_region }}"
+
+keystone_service_internaluri_insecure: false
+keystone_service_adminuri_insecure: false
+
+keystone_service_publicuri: "{{ keystone_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ keystone_service_port }}"
+keystone_service_internaluri: "{{ keystone_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ keystone_service_port }}"
+keystone_service_adminuri: "{{ keystone_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ keystone_admin_port }}"
+
+keystone_service_publicurl: "{{ keystone_service_publicuri }}/v3"
+keystone_service_internalurl: "{{ keystone_service_internaluri }}/v3"
+keystone_service_adminurl: "{{ keystone_service_adminuri }}/v3"
+
+keystone_cache_backend_argument: "url:{% for host in groups['memcached'] %}{{ hostvars[host]['container_address'] }}{% if not loop.last %},{% endif %}{% endfor %}:{{ memcached_port }}"
+keystone_memcached_servers: "{% for host in groups['keystone_all'] %}{{ hostvars[host]['container_address'] }}:{{ memcached_port }}{% if not loop.last %},{% endif %}{% endfor %}"

@@ -1,0 +1,23 @@
+- name: Install rabbitmq
+  yum: name=rabbitmq-server state=present
+
+- name: Configure rabbitmq file
+  template: 
+    src: "rabbitmq-env.conf.j2" 
+    dest: "/etc/rabbitmq/rabbitmq-env.conf"
+    owner: "rabbitmq"
+    group: "rabbitmq"
+    mode: "0644"
+  notify: restart rabbitmq-server
+
+- name: Add rabbit user 
+  rabbitmq_user: 
+    user: "{{ rabbitmq_user }}"
+    password: "{{ rabbitmq_pass }}"
+    configure_priv: ".*"
+    read_priv: ".*"
+    write_priv: ".*"
+    state: present
+
+- name: Start rabbitmq service
+  service: name=rabbitmq-server state=started enabled=true

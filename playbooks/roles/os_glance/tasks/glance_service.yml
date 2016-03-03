@@ -1,0 +1,6 @@
+- name: Start glance service
+  service: name={{ item }} state=started enabled=true
+  with_items:
+    - openstack-glance-api
+    - openstack-glance-registry
+   

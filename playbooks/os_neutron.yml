@@ -1,0 +1,6 @@
+---
+
+- name: configure openstack neutron
+  hosts: controller
+  roles:
+    - os_neutron

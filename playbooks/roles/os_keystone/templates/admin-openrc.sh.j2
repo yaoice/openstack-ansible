@@ -1,0 +1,10 @@
+export OS_PROJECT_DOMAIN_ID=default
+export OS_USER_DOMAIN_ID=default
+export OS_PROJECT_NAME={{ keystone_admin_tenant_name }}
+export OS_TENANT_NAME={{ keystone_admin_tenant_name }}
+export OS_USERNAME={{ keystone_admin_user_name }}
+export OS_PASSWORD={{ keystone_auth_admin_password }}
+export OS_AUTH_URL={{ keystone_service_adminurl }}
+export OS_IDENTITY_API_VERSION=3
+export OS_AUTH_VERSION=3
+export PS1='[\u@\h \W(keystone_admin)]\$ '

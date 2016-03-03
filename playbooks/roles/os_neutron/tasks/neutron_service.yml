@@ -1,0 +1,10 @@
+
+- name: Start neutron service
+  service: 
+     name: "{{ item.value.service_name }}"
+     state: started 
+     enabled: true
+     pattern: "{{ item.value.service_name }}"
+  with_dict: neutron_services
+  failed_when: false
+  when: item.value.service_en | bool

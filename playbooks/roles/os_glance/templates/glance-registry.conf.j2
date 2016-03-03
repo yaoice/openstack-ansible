@@ -1,0 +1,19 @@
+[DEFAULT]
+notification_driver = noop
+[database]
+connection = mysql://{{ glance_mariadb_user }}:{{ glance_mariadb_password }}@{{ glance_mariadb_address }}/{{ glance_mariadb_database }}
+
+[keystone_authtoken]
+auth_uri = {{ keystone_service_adminuri }}
+auth_url = {{ keystone_service_adminurl }}
+auth_plugin = {{ glance_keystone_auth_plugin }}
+project_domain_id = {{ glance_service_project_domain_id }}
+user_domain_id = {{ glance_service_user_domain_id }}
+project_name = {{ glance_service_project_name }}
+username = {{ glance_service_user_name }}
+password = {{ glance_service_password }} 
+
+[paste_deploy]
+flavor = keystone
+[paste_deploy]
+config_file=/usr/share/glance/glance-registry-dist-paste.ini

@@ -1,0 +1,11 @@
+- name: Start libvirtd service
+  service: name=libvirtd state=started enabled=true
+  register: start_service
+  tags:
+    - nova-compute-service
+
+- name: Start nova compute service
+  service: name=openstack-nova-compute state=started enabled=true
+  when: start_service|success
+  tags:
+    - nova-compute-service

@@ -1,0 +1,19 @@
+[DEFAULT]
+admin_token = {{ keystone_auth_admin_token }}
+admin_workers = 4
+public_workers = 4
+[database]
+connection = mysql://{{ keystone_mariadb_user }}:{{ keystone_mariadb_password }}@{{ keystone_mariadb_address }}/{{ keystone_mariadb_database }}
+max_pool_size=10
+max_retries=-1
+max_overflow=20
+[token]
+provider = uuid 
+driver = memcache
+[revoke]
+driver = sql 
+[memcache]
+servers = {{ keystone_memcached_address }}:11211
+
+[paste_deploy]
+config_file=/usr/share/keystone/keystone-dist-paste.ini

@@ -1,0 +1,6 @@
+---
+
+- name: configure openstack horizon
+  hosts: controller
+  roles:
+    - os_horizon

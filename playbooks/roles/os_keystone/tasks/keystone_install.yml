@@ -1,0 +1,42 @@
+- name: Install keystone 
+  yum: name={{ item }} state=present
+  with_items:
+    - openstack-keystone 
+    - httpd 
+    - mod_wsgi
+    - python-openstackclient
+    - memcached 
+    - python-memcached
+
+- name: Configure keystone file
+  template:
+    src: "keystone.conf.j2"
+    dest: "/etc/keystone/keystone.conf"
+    owner: "keystone"
+    group: "keystone"
+    mode: "0644"
+  notify: restart httpd
+
+- name: Configure keystone httpd file
+  template:
+    src: "wsgi-keystone.conf.j2"
+    dest: "/etc/httpd/conf.d/wsgi-keystone.conf"
+    mode: "0644"
+  notify: restart httpd    
+
+- name: Makdir /var/www/cgi-bin/keystone
+  file: path="/var/www/cgi-bin/keystone" mode=755 owner=keystone group=keystone state=directory
+
+- name: change keystone log file mode
+  file: path="/var/log/keystone/keystone.log" owner=keystone group=keystone
+
+- name: Copy the WSGI components
+  copy: 
+    src: "keystone.wsgi"
+    dest: "{{ item.dest }}"
+    owner: "keystone"
+    group: "keystone"
+    mode: "0755"
+  with_items:
+    - dest: "/var/www/cgi-bin/keystone/main"
+    - dest: "/var/www/cgi-bin/keystone/admin"

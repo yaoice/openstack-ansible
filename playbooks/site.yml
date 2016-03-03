@@ -1,0 +1,50 @@
+
+- name: configure openstack base
+  hosts: controller
+  roles:  
+    - base
+
+- name: configure openstack messaging
+  hosts: rabbitmq_all
+  roles:
+    - messaging
+
+- name: configure openstack database 
+  hosts: controller
+  roles:
+    - database
+
+
+- name: configure openstack cache 
+  hosts: controller
+  roles:
+    - cache
+
+
+- name: configure openstack keystone 
+  hosts: controller
+  roles:
+    - os_keystone
+
+
+- name: configure openstack glance 
+  hosts: controller
+  roles:
+    - os_glance 
+
+- name: configure openstack nova
+  hosts: controller
+  roles:
+    - os_nova
+   
+#  vars:
+#    glance_host: "{{ internal_lb_vip_address }}"
+#  vars_files:
+#    - defaults/repo_packages/openstack_other.yml
+
+
+- name: configure openstack neutron
+  hosts: controller
+  roles:
+    - os_neutron
+

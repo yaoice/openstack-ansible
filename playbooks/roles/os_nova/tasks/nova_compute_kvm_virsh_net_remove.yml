@@ -1,0 +1,11 @@
+- name: Check for libvirt default network
+  shell: "virsh net-list | awk '/default/'"
+  register: default_net
+
+- name: Disable libvirt default network
+  command: "virsh net-autostart default --disable"
+  when: default_net.stdout|search('default')
+
+- name: Destroy libvirt default network
+  command: "virsh net-destroy default"
+  when: default_net.stdout|search('default')

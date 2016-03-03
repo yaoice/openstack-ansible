@@ -1,0 +1,6 @@
+
+- name: Configure keystone openrc file
+  template:
+    src: "admin-openrc.sh.j2"
+    dest: "/root/admin-openrc.sh"
+    mode: "0755"

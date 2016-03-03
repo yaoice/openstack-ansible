@@ -1,0 +1,26 @@
+[controller]
+172.16.105.110 ansible_connection=local
+
+[nova_compute]
+172.16.105.110
+
+[rabbitmq_all]
+172.16.105.110
+
+[nova_console]
+172.16.105.110
+
+[neutron_all]
+172.16.105.110
+
+[neutron_server]
+172.16.105.110
+
+[neutron_agent]
+172.16.105.110
+
+[neutron_linuxbridge_agent]
+172.16.105.110
+
+[horizon_all]
+172.16.105.110

@@ -1,0 +1,13 @@
+- include: nova_service_add.yml
+  vars:
+    service_user_name: "{{ nova_service_user_name }}"
+    service_tenant_name: "{{ nova_service_project_name }}"
+    service_name: "{{ nova_service_name }}"
+    service_type: "{{ nova_service_type }}"
+    service_region: "{{ nova_service_region }}"
+    service_description: "{{ nova_service_description }}"
+    service_password: "{{ nova_service_password }}"
+    service_publicurl: "{{ nova_service_publicurl }}"
+    service_internalurl: "{{ nova_service_internalurl }}"
+    service_adminurl: "{{ nova_service_adminurl }}"
+    role_name: "{{ nova_service_role_name }}"

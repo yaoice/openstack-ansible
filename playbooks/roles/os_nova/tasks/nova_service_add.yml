@@ -1,0 +1,68 @@
+# Create a service
+- name: Ensure nova service
+  keystone:
+    command: "ensure_service"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    service_name: "{{ service_name }}"
+    service_type: "{{ service_type }}"
+    description: "{{ service_description }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  register: add_service
+  until: add_service|success
+  retries: 5
+  delay: 2
+    - nova-setup
+
+# Create an admin user
+- name: Ensure nova user
+  keystone:
+    command: "ensure_user"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    user_name: "{{ service_user_name }}"
+    tenant_name: "{{ service_tenant_name }}"
+    password: "{{ service_password }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  register: add_service
+  until: add_service|success
+  retries: 5
+  delay: 10
+    - nova-setup
+
+# Add a role to the user
+- name: Ensure nova user to admin role
+  keystone:
+    command: "ensure_user_role"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    user_name: "{{ service_user_name }}"
+    tenant_name: "{{ service_tenant_name }}"
+    role_name: "{{ role_name }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  register: add_service
+  until: add_service|success
+  retries: 5
+  delay: 10
+
+# Create an endpoint
+- name: Ensure nova endpoint
+  keystone:
+    command: "ensure_endpoint"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    region_name: "{{ service_region }}"
+    service_name: "{{ service_name }}"
+    service_type: "{{ service_type }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+    endpoint_list:
+      - url: "{{ service_publicurl }}"
+        interface: "public"
+      - url: "{{ service_internalurl }}"
+        interface: "internal"
+      - url: "{{ service_adminurl }}"
+        interface: "admin"
+  register: add_service
+  until: add_service|success
+  retries: 5
+  delay: 10

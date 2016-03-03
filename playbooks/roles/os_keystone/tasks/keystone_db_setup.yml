@@ -1,0 +1,24 @@
+- name: Create DB for service
+  mysql_db:
+    login_user: "{{ mariadb_root_user }}"
+    login_password: "{{ mariadb_root_password }}"
+    login_host: "{{ keystone_mariadb_address }}"
+    name: "{{ keystone_mariadb_database }}"
+    state: "present"
+
+- name: Grant access to the DB for the service
+  mysql_user:
+    login_user: "{{ mariadb_root_user }}"
+    login_password: "{{ mariadb_root_password }}"
+    login_host: "{{ keystone_mariadb_address }}"
+    name: "{{ keystone_mariadb_user }}"
+    password: "{{ keystone_mariadb_password }}"
+    host: "{{ item }}"
+    state: "present"
+    priv: "{{ keystone_mariadb_database }}.*:ALL"
+  with_items:
+    - "localhost"
+    - "%"
+
+- name: Perform a Keystone DB sync
+  command: keystone-manage db_sync

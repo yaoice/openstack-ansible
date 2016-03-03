@@ -1,0 +1,22 @@
+- name: Get package from git
+  git:
+    repo: "{{ nova_novncproxy_git_repo }}"
+    dest: "/usr/share/novnc"
+    clone: "yes"
+    update: "yes"
+    version: "{{ nova_novncproxy_git_install_branch }}"
+    force: yes
+  register: git_clone
+  until: git_clone|success
+  retries: 5
+  delay: 2
+
+- name: Install yum packages
+  yum:
+    name: "{{ item }}"
+    state: latest
+  register: install_packages
+  until: install_packages|success
+  retries: 5
+  delay: 2
+  with_items: nova_novnc_yum_packages

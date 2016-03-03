@@ -1,0 +1,30 @@
+- include: nova_compute_kvm_install.yml
+
+- name: Add nova user to libvirtd group
+  user:
+    name: "{{ nova_system_user_name }}"
+    groups: "qemu"
+    append: "yes"
+
+- name: Ensure kvm permissions
+  shell: "udevadm trigger"
+
+- name: Set libvirtd config
+  template: >
+    src=libvirtd.conf.j2
+    dest=/etc/libvirt/libvirtd.conf
+    owner="root"
+    group="root"
+    mode=0644
+  notify: Restart libvirtd
+
+- name: Set libvirt runtime options
+  lineinfile:
+    dest: "/etc/sysconfig/libvirtd"
+    line: 'LIBVIRTD_ARGS="-l"'
+    regexp: "^LIBVIRTD_ARGS="
+    backup: "yes"
+  when: nova_libvirtd_listen_tcp == 1
+  notify: Restart libvirtd
+
+- include: nova_compute_kvm_virsh_net_remove.yml

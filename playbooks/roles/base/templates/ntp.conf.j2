@@ -1,0 +1,10 @@
+driftfile /var/lib/ntp/drift
+restrict -4 default kod nomodify notrap
+restrict -6 default kod nomodify notrap
+restrict 127.0.0.1
+# use command "ntpq -c assoc" to check it
+server {{ ntpserver }} prefer
+server 127.127.1.0
+includefile /etc/ntp/crypto/pw
+keys /etc/ntp/keys
+fudge 127.127.1.0 stratum 0

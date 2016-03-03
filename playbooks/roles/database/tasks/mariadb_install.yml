@@ -1,0 +1,13 @@
+- name: Install mariadb
+  yum: name={{ item }} state=present
+  with_items:
+   - mariadb-server
+   - mariadb
+   - MySQL-python
+
+- name: Configure mariadb file
+  template: src=mariadb_openstack.cnf.j2 dest=/etc/my.cnf.d/mariadb_openstack.cnf
+  notify: restart mariadb
+
+- name: Start mariadb service
+  service: name=mariadb state=started enabled=true

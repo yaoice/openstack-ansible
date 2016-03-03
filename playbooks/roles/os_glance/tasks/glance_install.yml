@@ -1,0 +1,25 @@
+- name: Install glance 
+  yum: name={{ item }} state=present
+  with_items: glance_yum_packages
+
+- name: change glance log file mode
+  file: path="/var/log/glance" owner=glance group=glance recurse=yes state=directory
+
+- name: Configure glance api file
+  template:
+    src: "glance-api.conf.j2"
+    dest: "/etc/glance/glance-api.conf"
+    owner: "glance"
+    group: "glance"
+    mode: "644"
+  notify: Restart glance api
+
+- name: Configure glance registry file
+  template:
+    src: "glance-registry.conf.j2"
+    dest: "/etc/glance/glance-registry.conf"
+    owner: "glance"
+    group: "glance"
+    mode: "644"
+  notify: Restart glance registry
+
